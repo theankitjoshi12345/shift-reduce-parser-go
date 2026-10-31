@@ -1,0 +1,33 @@
+step | stack | input | lookup | action | details | parse tree stack
+-----+-------+-------+--------+--------+---------+-----------------
+   1 | 0     | +id*id$ | [0,id] | S5     | push id5                                 | id
+   2 | 0id5  | +id*id$ | [5,+]  | R6     | R6: F -> id; goto 3                      | [F id]
+   3 | 0F3   | +id*id$ | [3,+]  | R4     | R4: T -> F; goto 2                       | [T [F id]]
+   4 | 0T2   | +id*id$ | [2,+]  | R2     | R2: E -> T; goto 1                       | [E [T [F id]]]
+   5 | 0E1   | id*id$ | [1,+]  | S6     | push +6                                  | [E [T [F id]]] +
+   6 | 0E1+6 | *id$  | [6,id] | S5     | push id5                                 | [E [T [F id]]] + id
+   7 | 0E1+6id5 | *id$  | [5,*]  | R6     | R6: F -> id; goto 3                      | [E [T [F id]]] + [F id]
+   8 | 0E1+6F3 | *id$  | [3,*]  | R4     | R4: T -> F; goto 9                       | [E [T [F id]]] + [T [F id]]
+   9 | 0E1+6T9 | id$   | [9,*]  | S7     | push *7                                  | [E [T [F id]]] + [T [F id]] *
+  10 | 0E1+6T9*7 | $     | [7,id] | S5     | push id5                                 | [E [T [F id]]] + [T [F id]] * id
+  11 | 0E1+6T9*7id5 | $     | [5,$]  | R6     | R6: F -> id; goto 10                     | [E [T [F id]]] + [T [F id]] * [F id]
+  12 | 0E1+6T9*7F10 | $     | [10,$] | R3     | R3: T -> T * F; goto 9                   | [E [T [F id]]] + [T [T [F id]] * [F id]]
+  13 | 0E1+6T9 | $     | [9,$]  | R1     | R1: E -> E + T; goto 1                   | [E [E [T [F id]]] + [T [T [F id]] * [F id]]]
+  14 | 0E1   | $     | [1,$]  | accept |                                          | [E [E [T [F id]]] + [T [T [F id]] * [F id]]]
+
+Result: input is grammatical.
+
+Parse tree:
+E
+    E
+        T
+            F
+                id
+    +
+    T
+        T
+            F
+                id
+        *
+        F
+            id
