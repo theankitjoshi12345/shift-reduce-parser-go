@@ -208,6 +208,7 @@ func (p *parser) parse() {
 func (p *parser) parse1Step() {
 	p.step++
 	beforeStack := p.stack.String()
+	beforeInput := p.inputString()
 	token := p.currentToken()
 	state, err := strconv.Atoi(p.stack.top().stateSym)
 	if err != nil {
@@ -223,7 +224,7 @@ func (p *parser) parse1Step() {
 	action := actionTable[state][tokenColumn]
 	if action == "" {
 		p.ungrammatical = true
-		fmt.Printf("%4d | %-5s | %-5s | %-6s | error  | invalid action | %s\n", p.step, beforeStack, p.inputString(), lookup, p.trees)
+		fmt.Printf("%4d | %-5s | %-5s | %-6s | error  | invalid action | %s\n", p.step, beforeStack, beforeInput, lookup, p.trees)
 		return
 	}
 
@@ -251,7 +252,7 @@ func (p *parser) parse1Step() {
 		p.reduceTree(rule)
 		details = fmt.Sprintf("R%d: %s -> %s; goto %s", ruleNumber, rule.lhs, strings.Join(rule.rhs, " "), nextState)
 	}
-	fmt.Printf("%4d | %-5s | %-5s | %-6s | %-6s | %-40s | %s\n", p.step, beforeStack, p.inputString(), lookup, action, details, p.trees)
+	fmt.Printf("%4d | %-5s | %-5s | %-6s | %-6s | %-40s | %s\n", p.step, beforeStack, beforeInput, lookup, action, details, p.trees)
 }
 
 func (p *parser) reduceTree(rule grammarRule) {
